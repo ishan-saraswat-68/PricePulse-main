@@ -63,6 +63,14 @@ app.get("/", (req, res) => {
     res.json({ message: "PricePulse API" });
 });
 
+app.get("/health", (req, res) => {
+    res.json({
+        status: "ok",
+        uptime: Math.floor(process.uptime()),
+        timestamp: new Date().toISOString(),
+    });
+});
+
 app.get(
     "/products",
     asyncHandler(async (req, res) => {
