@@ -12,7 +12,7 @@ import { AlertPanel } from "../components/monitoring/AlertPanel";
 import { ScrapeActivity } from "../components/monitoring/ScrapeActivity";
 import { LoadingSkeleton } from "../components/ui/LoadingSkeleton";
 import { ErrorState } from "../components/ui/ErrorState";
-import { RefreshCw, Eye } from "lucide-react";
+import { RefreshCw, Eye, ArrowLeft, Activity } from "lucide-react";
 
 export function ProductMonitor() {
   const { id } = useParams();
@@ -63,25 +63,26 @@ export function ProductMonitor() {
         <div>
           <Link
             to="/dashboard"
-            className="text-xs uppercase tracking-wider font-bold text-[#767676] hover:text-[#111111] transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-heading font-semibold text-slate-500 hover:text-cyan-600 transition-colors"
           >
-            ← Back to Dashboard
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to Dashboard</span>
           </Link>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             to={`/products/${productId}`}
-            className="btn btn-ghost !py-1 !px-3"
+            className="btn btn-ghost !py-1.5 !px-3.5 !text-xs"
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="w-3.5 h-3.5 text-slate-500" />
             <span>Store Details</span>
           </Link>
 
           <button
             onClick={handleRefreshAll}
             disabled={refreshingPrice}
-            className="btn btn-ghost !py-1 !px-3 cursor-pointer"
+            className="btn btn-primary !py-1.5 !px-3.5 !text-xs cursor-pointer"
             title="Fetch Fresh Store Price"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshingPrice ? "animate-spin" : ""}`} />
@@ -91,25 +92,26 @@ export function ProductMonitor() {
       </div>
 
       {refreshError && (
-        <div className="border border-red-500 bg-red-50 text-red-800 px-4 py-2 text-xs font-mono">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 text-rose-800 px-4 py-3 text-xs font-mono">
           {refreshError}
         </div>
       )}
 
-      {/* Page Title & Status */}
-      <div className="border-b border-[#111111] pb-4">
-        <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#767676] block mb-1">
-          Surveillance Stream #{productId}
-        </span>
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-[#111111]">
+      {/* Page Title & Status Banner */}
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-heading font-semibold bg-cyan-50 text-cyan-800 border border-cyan-200/70 mb-3">
+          <Activity className="w-3.5 h-3.5 text-cyan-600" />
+          <span>Surveillance Telemetry Stream #{productId}</span>
+        </div>
+        <h1 className="font-heading text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
           {product?.name || `Telemetry: Item #${productId}`}
         </h1>
-        <div className="flex flex-wrap items-center gap-3 text-xs text-[#767676] mt-1 font-serif">
-          <span>Brand: <strong className="text-[#111111] font-sans font-semibold">{product?.brand || "—"}</strong></span>
+        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-2 font-medium">
+          <span>Brand: <strong className="text-slate-800 font-semibold">{product?.brand || "—"}</strong></span>
           <span>·</span>
-          <span>Category: <strong className="text-[#111111] font-sans font-semibold">{product?.category || "—"}</strong></span>
+          <span>Category: <strong className="text-cyan-700 font-semibold">{product?.category || "—"}</strong></span>
           <span>·</span>
-          <span>SKU: <strong className="text-[#111111] font-mono">{product?.sku || "—"}</strong></span>
+          <span>SKU: <strong className="text-slate-800 font-mono">{product?.sku || "—"}</strong></span>
         </div>
       </div>
 

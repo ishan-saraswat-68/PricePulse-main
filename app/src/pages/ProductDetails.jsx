@@ -7,6 +7,7 @@ import { ProductSummary } from "../components/products/ProductSummary";
 import { ProductSpecs } from "../components/products/ProductSpecs";
 import { LoadingSkeleton } from "../components/ui/LoadingSkeleton";
 import { ErrorState } from "../components/ui/ErrorState";
+import { ArrowLeft } from "lucide-react";
 
 export function ProductDetails() {
   const { id } = useParams();
@@ -37,14 +38,15 @@ export function ProductDetails() {
   }, [history, dashboardRows, productId]);
 
   return (
-    <div>
+    <div className="space-y-6">
       {/* Back Link */}
-      <div className="mb-6">
+      <div>
         <Link
           to="/products"
-          className="text-xs uppercase tracking-wider font-bold text-[#767676] hover:text-[#111111] transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-heading font-semibold text-slate-500 hover:text-cyan-600 transition-colors"
         >
-          ← Back to all products
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Catalog Shelves</span>
         </Link>
       </div>
 
@@ -58,7 +60,7 @@ export function ProductDetails() {
           onRetry={() => window.location.reload()}
         />
       ) : (
-        <div>
+        <div className="space-y-8">
           {/* Main Summary Section */}
           <ProductSummary
             product={product}
@@ -77,4 +79,3 @@ export function ProductDetails() {
     </div>
   );
 }
-

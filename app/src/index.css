@@ -2,103 +2,152 @@
 
 @layer base {
   :root {
-    --serif: Georgia, "Times New Roman", "Times", serif;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    --bg: #ffffff;
-    --ink: #111111;
-    --muted: #767676;
-    --line: #e4e4e4;
-    --line-strong: #111111;
-    --wash: #f6f6f6;
+    --font-heading: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-sans: "Inter", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Clean Sober Palette */
+    --bg-app: #f8fafc; /* Slate-50 */
+    --bg-card: #ffffff;
+    --bg-surface: #f1f5f9; /* Slate-100 */
+
+    /* Typography ink */
+    --slate-950: #020617;
+    --slate-900: #0f172a;
+    --slate-800: #1e293b;
+    --slate-700: #334155;
+    --slate-600: #475569;
+    --slate-500: #64748b;
+    --slate-400: #94a3b8;
+    --slate-300: #cbd5e1;
+    --slate-200: #e2e8f0;
+    --slate-100: #f1f5f9;
+
+    /* Distinctive Cyan Accents */
+    --cyan-500: #06b6d4;
+    --cyan-600: #0891b2;
+    --cyan-700: #0e7490;
+    --cyan-800: #155e75;
+    --cyan-100: #cffafe;
+    --cyan-50: #ecfeff;
+
+    --line: #e2e8f0;
+    --line-subtle: #f1f5f9;
   }
 
   body {
-    font-family: var(--sans);
+    font-family: var(--font-sans);
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: var(--bg);
-    color: var(--ink);
+    background-color: var(--bg-app);
+    color: var(--slate-900);
     min-height: 100vh;
+    letter-spacing: -0.012em;
   }
 
-  h1, h2, h3, h4, .font-serif {
-    font-family: var(--serif);
+  ::selection {
+    background-color: #06b6d4;
+    color: #ffffff;
   }
+
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: var(--font-heading);
+    letter-spacing: -0.025em;
+  }
+}
+
+.font-heading {
+  font-family: var(--font-heading);
 }
 
 .font-mono {
-  font-family: var(--mono);
-}
-
-.font-serif {
-  font-family: var(--serif);
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em;
 }
 
 .font-sans {
-  font-family: var(--sans);
+  font-family: var(--font-sans);
 }
 
-/* Minimalist Button Styles matching INE Store */
+/* Modern Clean Button Utilities */
 .btn {
-  border: 1px solid var(--ink);
-  font-family: var(--sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: var(--bg);
-  color: var(--ink);
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
   cursor: pointer;
-  border-radius: 0;
+  border-radius: 0.75rem; /* rounded-xl */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.55rem 1.1rem;
-  font-size: 0.72rem;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .btn:disabled {
-  opacity: 0.35;
+  opacity: 0.45;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn-primary {
-  background: var(--ink);
-  color: var(--bg);
+  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+  color: #ffffff;
+  border: 1px solid rgba(8, 145, 178, 0.2);
+  box-shadow: 0 2px 4px rgba(6, 182, 212, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #000000;
-  color: #ffffff;
+  background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3), 0 2px 4px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-ghost {
-  background: var(--bg);
-  color: var(--ink);
-  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--slate-700);
+  border: 1px solid var(--slate-200);
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
+  background: var(--cyan-50);
+  color: var(--cyan-700);
+  border-color: #a5f3fc;
+  transform: translateY(-1px);
 }
 
-/* Custom Scrollbar in Black & White */
+.btn-dark {
+  background: var(--slate-900);
+  color: #ffffff;
+  border: 1px solid var(--slate-800);
+}
+
+.btn-dark:hover:not(:disabled) {
+  background: var(--slate-800);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: #f8fafc;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d4d4d4;
+  background: #cbd5e1;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a3a3a3;
+  background: #06b6d4;
 }

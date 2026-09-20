@@ -430,4 +430,30 @@ app.use((error, req, res, next) => {
 
 app.listen(3000, () => {
     console.log("Server running on http://localhost:3000");
+
+    // --- Automatic Background Scheduler Loop ---
+    // Automatically checks and executes due scrapes every 30 seconds
+    let isSchedulerRunning = false;
+    async function triggerSchedulerSweep() {
+        if (isSchedulerRunning) return;
+        isSchedulerRunning = true;
+        try {
+            const summary = await runDueScrapes();
+            if (summary.claimed > 0) {
+                console.log(
+                    `[scheduler] Background sweep completed: ${summary.succeeded}/${summary.claimed} succeeded, ` +
+                    `${summary.failed} failed, ${summary.alertsFired} alerts triggered`
+                );
+            }
+        } catch (err) {
+            console.error("[scheduler] Background sweep error:", err.message);
+        } finally {
+            isSchedulerRunning = false;
+        }
+    }
+
+    // Run initial sweep 5 seconds after startup, then every 30 seconds
+    setTimeout(triggerSchedulerSweep, 5000);
+    setInterval(triggerSchedulerSweep, 30_000);
 });
+

@@ -5,23 +5,23 @@ export function HealthBadge({ status, size = "sm" }) {
 
   const configs = {
     healthy: {
-      className: "bg-[#111111] text-white border border-[#111111]",
-      dot: "bg-white",
+      className: "bg-emerald-50 text-emerald-700 border border-emerald-200/80",
+      dot: "bg-emerald-500",
       label: "Healthy",
     },
     failing: {
-      className: "bg-white text-[#111111] border border-[#111111] underline",
-      dot: "bg-[#111111]",
+      className: "bg-rose-50 text-rose-700 border border-rose-200/80",
+      dot: "bg-rose-500",
       label: "Failing",
     },
     pending: {
-      className: "bg-[#f6f6f6] text-[#767676] border border-[#e4e4e4]",
-      dot: "bg-[#767676]",
-      label: "Pending",
+      className: "bg-cyan-50 text-cyan-700 border border-cyan-200/80",
+      dot: "bg-cyan-500",
+      label: "Active",
     },
     disabled: {
-      className: "bg-white text-[#767676] border border-[#e4e4e4]",
-      dot: "bg-[#cccccc]",
+      className: "bg-slate-100 text-slate-500 border border-slate-200",
+      dot: "bg-slate-400",
       label: "Paused",
     },
   };
@@ -31,8 +31,8 @@ export function HealthBadge({ status, size = "sm" }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 font-mono uppercase tracking-wider font-semibold ${config.className} ${
-        isSm ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs"
+      className={`inline-flex items-center gap-1.5 font-heading font-semibold rounded-full ${config.className} ${
+        isSm ? "px-2.5 py-0.5 text-[10.5px]" : "px-3 py-1 text-xs"
       }`}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />

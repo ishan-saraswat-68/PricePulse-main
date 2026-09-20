@@ -11,7 +11,7 @@ export async function insert(row) {
 export async function list({ limit = 200, productId } = {}) {
     let query = getDb()
         .from("scrape_log")
-        .select("*")
+        .select("*, price_history:price_history_id(price, stock, mrp, quoted_at)")
         .order("attempted_at", { ascending: false })
         .limit(limit);
 
@@ -19,5 +19,14 @@ export async function list({ limit = 200, productId } = {}) {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data ?? [];
+
+    return (data ?? []).map((row) => ({
+        ...row,
+        scraped_at: row.attempted_at,
+        http_status: row.status === "success" ? 200 : (row.status === "structure_error" ? 422 : 500),
+        price: row.price_history?.price ?? null,
+        stock: row.price_history?.stock ?? null,
+        mrp: row.price_history?.mrp ?? null,
+        quoted_at: row.price_history?.quoted_at ?? row.attempted_at,
+    }));
 }
