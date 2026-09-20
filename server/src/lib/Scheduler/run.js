@@ -24,7 +24,7 @@ function mapQuote(productId, quote) {
         format: quote.format,
         pending: quote.pending,
         triple: quote.triple,
-        quoted_at: new Date(quote.at).toISOString(),
+        quoted_at: new Date(quote.at || Date.now()).toISOString(),
         scraped_at: new Date().toISOString(),
     };
 }

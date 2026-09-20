@@ -15,6 +15,13 @@ export function TrackingPanel({
     trackedInfo?.scrape_frequency_minutes || trackedInfo?.frequency_minutes || 60;
   const [selectedFreq, setSelectedFreq] = useState(initialFreq);
 
+  React.useEffect(() => {
+    const freq = trackedInfo?.scrape_frequency_minutes || trackedInfo?.frequency_minutes;
+    if (freq) {
+      setSelectedFreq(freq);
+    }
+  }, [trackedInfo?.scrape_frequency_minutes, trackedInfo?.frequency_minutes]);
+
   const isPaused =
     trackedInfo?.is_active === false ||
     trackedInfo?.status === "paused" ||
@@ -143,6 +150,8 @@ export function TrackingPanel({
           disabled={loading || isPaused}
           className="bg-white border border-slate-200 rounded-xl text-xs font-heading font-medium text-slate-800 px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 disabled:opacity-40 cursor-pointer shadow-2xs"
         >
+          <option value={5}>Every 5m</option>
+          <option value={10}>Every 10m</option>
           <option value={15}>Every 15m</option>
           <option value={30}>Every 30m</option>
           <option value={60}>Every 1h</option>

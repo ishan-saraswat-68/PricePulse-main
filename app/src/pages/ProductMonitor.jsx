@@ -19,10 +19,10 @@ export function ProductMonitor() {
   const productId = Number(id);
 
   const { product, loading: prodLoading, error: prodError } = useProduct(productId);
-  const { history, setHistory, loading: histLoading, refresh: refreshHistory } = usePriceHistory(productId);
+  const { history, setHistory, loading: histLoading, refresh: refreshHistory } = usePriceHistory(productId, 8_000);
   const { alerts } = useAlerts(productId);
-  const { logs, refresh: refreshLogs } = useScrapeLogs(productId, 50);
-  const { rows: dashboardRows, refresh: refreshDashboard } = useDashboard(30_000);
+  const { logs, refresh: refreshLogs } = useScrapeLogs(productId, 50, 8_000);
+  const { rows: dashboardRows, refresh: refreshDashboard } = useDashboard(10_000);
 
   const [refreshingPrice, setRefreshingPrice] = useState(false);
   const [refreshError, setRefreshError] = useState(null);
@@ -33,22 +33,18 @@ export function ProductMonitor() {
     try {
       setRefreshingPrice(true);
       setRefreshError(null);
-      const newPoint = await refreshProductPrice(productId);
-      if (newPoint) {
-        setHistory((prev) => {
-          const exists = prev.some((p) => p.id === newPoint.id);
-          if (exists) return prev;
-          return [...prev, newPoint];
-        });
-      }
-      refreshDashboard();
-      if (refreshLogs) refreshLogs();
+      await refreshProductPrice(productId);
+      await Promise.all([
+        refreshHistory(),
+        refreshDashboard(),
+        refreshLogs ? refreshLogs() : Promise.resolve(),
+      ]);
     } catch (err) {
       setRefreshError(err.message || "Failed to fetch live price");
     } finally {
       setRefreshingPrice(false);
     }
-  }, [productId, refreshDashboard, refreshLogs, setHistory]);
+  }, [productId, refreshDashboard, refreshLogs, refreshHistory]);
 
   const handleRefreshAll = useCallback(() => {
     handleRefreshPrice();
