@@ -1,21 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { HealthBadge } from "../ui/HealthBadge";
 import { StockBadge } from "../ui/StockBadge";
 import { relativeTime, formatDateTime, trackProduct, pauseTracking } from "../../services/api";
 import { Timer, Pause, Play, Loader2, AlertCircle, Clock } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
 
 export function TrackingPanel({
   productId,
   trackedInfo,
   onStatusChange,
 }) {
+  const { isDark } = useTheme();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const initialFreq =
     trackedInfo?.scrape_frequency_minutes || trackedInfo?.frequency_minutes || 60;
   const [selectedFreq, setSelectedFreq] = useState(initialFreq);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const freq = trackedInfo?.scrape_frequency_minutes || trackedInfo?.frequency_minutes;
     if (freq) {
       setSelectedFreq(freq);
@@ -72,58 +74,144 @@ export function TrackingPanel({
   }
 
   return (
-    <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-5">
-      <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+    <div
+      className={`rounded-md border p-5 space-y-4 font-sans transition-colors duration-150 ${
+        isDark
+          ? "border-[#353530] bg-[#181816] text-[#F5F5F0]"
+          : "border-[#E4E2DE] bg-[#FFFFFF] text-[#171717]"
+      }`}
+    >
+      <div
+        className={`flex items-center justify-between pb-3 border-b ${
+          isDark ? "border-[#353530]" : "border-[#E4E2DE]"
+        }`}
+      >
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-cyan-50 border border-cyan-100 flex items-center justify-center">
-            <Timer className="w-4 h-4 text-cyan-600" />
+          <div
+            className={`w-7 h-7 rounded border flex items-center justify-center ${
+              isDark
+                ? "bg-[#11110F] border-[#353530]"
+                : "bg-[#F3F2EE] border-[#E4E2DE]"
+            }`}
+          >
+            <Timer
+              className={`w-3.5 h-3.5 ${
+                isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+              }`}
+            />
           </div>
-          <h3 className="font-heading font-bold text-sm text-slate-900">
+          <h3
+            className={`font-semibold text-sm ${
+              isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+            }`}
+          >
             Surveillance Engine
           </h3>
         </div>
-        <HealthBadge status={healthStatus} />
+        <HealthBadge status={healthStatus} isMonitoring={true} />
       </div>
 
       {/* Grid of details */}
-      <div className="grid grid-cols-2 gap-2.5 text-xs">
-        <div className="p-3 rounded-2xl border border-slate-100 bg-slate-50/70">
-          <span className="text-[10px] uppercase font-heading font-bold tracking-wider text-slate-400 block mb-1">
+      <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+        <div
+          className={`p-2.5 rounded border ${
+            isDark
+              ? "border-[#353530] bg-[#11110F]"
+              : "border-[#E4E2DE] bg-[#F7F7F5]"
+          }`}
+        >
+          <span
+            className={`text-[10px] uppercase tracking-wider block mb-1 ${
+              isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+            }`}
+          >
             Status
           </span>
-          <span className="font-mono font-bold text-slate-800 uppercase">
+          <span
+            className={`font-bold uppercase ${
+              isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+            }`}
+          >
             {isPaused ? "PAUSED" : "ACTIVE"}
           </span>
         </div>
 
-        <div className="p-3 rounded-2xl border border-slate-100 bg-slate-50/70">
-          <span className="text-[10px] uppercase font-heading font-bold tracking-wider text-slate-400 block mb-1">
+        <div
+          className={`p-2.5 rounded border ${
+            isDark
+              ? "border-[#353530] bg-[#11110F]"
+              : "border-[#E4E2DE] bg-[#F7F7F5]"
+          }`}
+        >
+          <span
+            className={`text-[10px] uppercase tracking-wider block mb-1 ${
+              isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+            }`}
+          >
             Stock Level
           </span>
           <StockBadge stock={stockLevel} />
         </div>
 
-        <div className="p-3 rounded-2xl border border-slate-100 bg-slate-50/70">
-          <span className="text-[10px] uppercase font-heading font-bold tracking-wider text-slate-400 block mb-1">
+        <div
+          className={`p-2.5 rounded border ${
+            isDark
+              ? "border-[#353530] bg-[#11110F]"
+              : "border-[#E4E2DE] bg-[#F7F7F5]"
+          }`}
+        >
+          <span
+            className={`text-[10px] uppercase tracking-wider block mb-1 ${
+              isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+            }`}
+          >
             Last Scraped
           </span>
-          <span className="font-mono font-medium text-slate-800 block text-[11px]" title={trackedInfo?.last_scraped_at}>
+          <span
+            className={`font-medium block text-[11px] ${
+              isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+            }`}
+            title={trackedInfo?.last_scraped_at}
+          >
             {relativeTime(trackedInfo?.last_scraped_at)}
           </span>
-          <span className="text-[9.5px] text-slate-400 font-mono block mt-0.5">
+          <span
+            className={`text-[9.5px] block mt-0.5 ${
+              isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+            }`}
+          >
             {formatDateTime(trackedInfo?.last_scraped_at)}
           </span>
         </div>
 
-        <div className="p-3 rounded-2xl border border-slate-100 bg-slate-50/70">
-          <span className="text-[10px] uppercase font-heading font-bold tracking-wider text-slate-400 block mb-1">
+        <div
+          className={`p-2.5 rounded border ${
+            isDark
+              ? "border-[#353530] bg-[#11110F]"
+              : "border-[#E4E2DE] bg-[#F7F7F5]"
+          }`}
+        >
+          <span
+            className={`text-[10px] uppercase tracking-wider block mb-1 ${
+              isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+            }`}
+          >
             Next Run
           </span>
-          <span className="font-mono font-medium text-cyan-700 block text-[11px]" title={trackedInfo?.next_scrape_at}>
+          <span
+            className={`font-medium block text-[11px] ${
+              isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+            }`}
+            title={trackedInfo?.next_scrape_at}
+          >
             {isPaused ? "Standby" : relativeTime(trackedInfo?.next_scrape_at)}
           </span>
           {!isPaused && trackedInfo?.next_scrape_at && (
-            <span className="text-[9.5px] text-slate-400 font-mono block mt-0.5">
+            <span
+              className={`text-[9.5px] block mt-0.5 ${
+                isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+              }`}
+            >
               {formatDateTime(trackedInfo?.next_scrape_at)}
             </span>
           )}
@@ -131,14 +219,32 @@ export function TrackingPanel({
       </div>
 
       {/* Frequency Setting */}
-      <div className="p-3.5 rounded-2xl border border-cyan-100 bg-cyan-50/40 flex items-center justify-between gap-3">
+      <div
+        className={`p-3 rounded border flex items-center justify-between gap-3 ${
+          isDark
+            ? "border-[#353530] bg-[#11110F]"
+            : "border-[#E4E2DE] bg-[#F7F7F5]"
+        }`}
+      >
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-cyan-600 shrink-0" />
+          <Clock
+            className={`w-3.5 h-3.5 shrink-0 ${
+              isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+            }`}
+          />
           <div>
-            <span className="text-xs font-heading font-bold text-slate-800 block">
+            <span
+              className={`text-xs font-semibold block ${
+                isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+              }`}
+            >
               Interval Schedule
             </span>
-            <span className="text-[10.5px] text-slate-500 font-medium">
+            <span
+              className={`text-[10px] font-mono ${
+                isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+              }`}
+            >
               Background scrape cycle
             </span>
           </div>
@@ -148,7 +254,11 @@ export function TrackingPanel({
           value={selectedFreq}
           onChange={(e) => handleFrequencyChange(Number(e.target.value))}
           disabled={loading || isPaused}
-          className="bg-white border border-slate-200 rounded-xl text-xs font-heading font-medium text-slate-800 px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 disabled:opacity-40 cursor-pointer shadow-2xs"
+          className={`border rounded text-xs font-mono px-2.5 py-1 focus:outline-none disabled:opacity-40 cursor-pointer ${
+            isDark
+              ? "bg-[#181816] border-[#353530] text-[#F5F5F0] focus:border-[#F59E0B]"
+              : "bg-[#FFFFFF] border-[#E4E2DE] text-[#171717] focus:border-[#D97706]"
+          }`}
         >
           <option value={5}>Every 5m</option>
           <option value={10}>Every 10m</option>
@@ -166,10 +276,22 @@ export function TrackingPanel({
         <button
           onClick={handleTogglePause}
           disabled={loading}
-          className={`w-full !rounded-xl ${isPaused ? "btn btn-primary" : "btn btn-ghost"}`}
+          className={`w-full py-2 px-3 rounded font-sans text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+            isPaused
+              ? isDark
+                ? "bg-[#F59E0B] text-[#11110F] hover:bg-[#D97706]"
+                : "bg-[#D97706] text-white hover:bg-[#B45309]"
+              : isDark
+              ? "bg-[#11110F] border border-[#353530] text-[#F5F5F0] hover:bg-[#262624] hover:border-[#484842]"
+              : "bg-[#F7F7F5] border border-[#E4E2DE] text-[#171717] hover:bg-[#EAE8E4] hover:border-[#D8D6D0]"
+          }`}
         >
           {loading ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-600" />
+            <Loader2
+              className={`w-3.5 h-3.5 animate-spin ${
+                isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+              }`}
+            />
           ) : isPaused ? (
             <>
               <Play className="w-3.5 h-3.5 fill-current" />
@@ -177,7 +299,11 @@ export function TrackingPanel({
             </>
           ) : (
             <>
-              <Pause className="w-3.5 h-3.5 fill-current text-slate-400" />
+              <Pause
+                className={`w-3.5 h-3.5 fill-current ${
+                  isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+                }`}
+              />
               <span>Pause Surveillance</span>
             </>
           )}
@@ -185,7 +311,13 @@ export function TrackingPanel({
       </div>
 
       {error && (
-        <div className="p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 text-xs font-mono flex items-center gap-2">
+        <div
+          className={`p-2.5 rounded border text-xs font-mono flex items-center gap-2 ${
+            isDark
+              ? "border-[#EF4444]/40 bg-[#2D1616] text-[#EF4444]"
+              : "border-[#DC2626]/30 bg-[#FDF2F2] text-[#DC2626]"
+          }`}
+        >
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>

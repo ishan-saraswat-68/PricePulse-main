@@ -1,58 +1,72 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Outlet, Link } from "react-router-dom";
 import { Header } from "./Header";
 import { Activity } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
 
 export function Layout() {
-  useEffect(() => {
-    // Ensure dark-theme class is completely removed
-    document.documentElement.classList.remove("dark-theme");
-    document.body.classList.remove("dark-theme");
-  }, []);
+  const { isDark } = useTheme();
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50/70 text-slate-900 font-sans antialiased relative selection:bg-cyan-500 selection:text-white">
-      {/* Ambient Blurred Glowing Circles in Background (Glassmorphic Backdrop) */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 select-none">
-        {/* Top-left Electric Cyan Glow Orb */}
-        <div className="absolute -top-32 -left-32 w-[540px] h-[540px] rounded-full bg-cyan-400/14 blur-[130px]" />
-
-        {/* Top-right Sky Blue Blur Orb */}
-        <div className="absolute top-[8%] -right-36 w-[620px] h-[620px] rounded-full bg-sky-400/12 blur-[140px]" />
-
-        {/* Mid-screen Soft Teal Glow Orb */}
-        <div className="absolute top-[42%] -left-40 w-[500px] h-[500px] rounded-full bg-teal-300/10 blur-[130px]" />
-
-        {/* Bottom-right Cyan Accent Orb */}
-        <div className="absolute -bottom-28 right-[10%] w-[580px] h-[580px] rounded-full bg-cyan-300/12 blur-[130px]" />
-
-        {/* Subtle Tech Dot Matrix Grid */}
-        <div className="absolute inset-0 bg-[radial-gradient(#0891b2_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.025]" />
-      </div>
-
+    <div
+      className={`min-h-screen flex flex-col font-sans antialiased transition-colors duration-150 ${
+        isDark ? "bg-[#11110F] text-[#F5F5F0]" : "bg-[#F7F7F5] text-[#171717]"
+      }`}
+    >
       <Header />
-      <main className="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-0">
+      <main className="flex-1 max-w-[1280px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <Outlet />
       </main>
-      <footer className="border-t border-slate-200/80 py-8 bg-white/75 backdrop-blur-md text-xs text-slate-500 mt-auto relative z-0">
+
+      <footer
+        className={`border-t py-8 text-xs transition-colors duration-150 mt-auto ${
+          isDark
+            ? "bg-[#181816] border-[#353530] text-[#A1A19A]"
+            : "bg-[#FFFFFF] border-[#E4E2DE] text-[#6B6B6B]"
+        }`}
+      >
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-md bg-cyan-500/10 flex items-center justify-center">
-              <Activity className="w-3 h-3 text-cyan-600" />
+          <div className="flex items-center gap-2.5">
+            <div
+              className={`w-5 h-5 rounded flex items-center justify-center ${
+                isDark ? "bg-[#262624] text-[#F59E0B]" : "bg-[#F3F2EE] text-[#D97706]"
+              }`}
+            >
+              <Activity className="w-3 h-3" />
             </div>
-            <span className="font-heading font-semibold text-slate-700">
-              PricePulse Intelligence
+            <span
+              className={`font-medium ${
+                isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+              }`}
+            >
+              PricePulse
             </span>
-            <span className="text-slate-300">·</span>
-            <span>Real-time price & stock telemetry engine</span>
+            <span className={isDark ? "text-[#484842]" : "text-[#8A8A84]"}>·</span>
+            <span className={`font-mono text-[11px] ${isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"}`}>
+              Autonomous price & stock surveillance
+            </span>
           </div>
 
-          <div className="flex items-center gap-6 font-medium text-slate-500">
-            <Link to="/products" className="hover:text-cyan-600 transition-colors">
-              Catalog Shelves
+          <div className="flex items-center gap-6 font-medium">
+            <Link
+              to="/products"
+              className={`transition-colors ${
+                isDark
+                  ? "hover:text-[#F59E0B]"
+                  : "hover:text-[#D97706]"
+              }`}
+            >
+              All products
             </Link>
-            <Link to="/dashboard" className="hover:text-cyan-600 transition-colors">
-              Surveillance Dashboard
+            <Link
+              to="/dashboard"
+              className={`transition-colors ${
+                isDark
+                  ? "hover:text-[#F59E0B]"
+                  : "hover:text-[#D97706]"
+              }`}
+            >
+              Dashboard
             </Link>
           </div>
         </div>

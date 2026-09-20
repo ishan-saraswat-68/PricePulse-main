@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ProductCard } from "./ProductCard";
 import { EmptyState } from "../ui/EmptyState";
+import { useDashboard } from "../../hooks/useDashboard";
 import { PackageSearch, ChevronLeft, ChevronRight } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
 
 export function ProductGrid({ products = [] }) {
+  const { isDark } = useTheme();
   const [page, setPage] = useState(1);
   const pageSize = 12;
+  const { rows: dashboardRows } = useDashboard(60_000);
+
+  const trackedMap = useMemo(() => {
+    return Object.fromEntries(dashboardRows.map((r) => [r.product_id, r]));
+  }, [dashboardRows]);
 
   // Reset page when product count changes
   useEffect(() => {
@@ -28,19 +36,28 @@ export function ProductGrid({ products = [] }) {
 
   return (
     <div>
-      {/* Spacious 4-Column Responsive Sculpted Card Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {/* 4-Column Product Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
         {currentProducts.map((p) => (
-          <ProductCard key={p.id} product={p} />
+          <ProductCard key={p.id} product={p} trackedInfo={trackedMap[p.id]} />
         ))}
       </div>
 
-      {/* Modern Rounded Pagination Bar */}
+      {/* Pagination Bar */}
       {totalPages > 1 && (
-        <nav className="flex items-center justify-center gap-4 mt-12 pt-6 border-t border-slate-200/80" aria-label="Catalog pages">
+        <nav
+          className={`flex items-center justify-center gap-3 mt-12 pt-6 border-t ${
+            isDark ? "border-[#353530]" : "border-[#D8D6D0]"
+          }`}
+          aria-label="Catalog pages"
+        >
           <button
             type="button"
-            className="btn btn-ghost !py-2 !px-4"
+            className={`px-3.5 py-2 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+              isDark
+                ? "bg-[#181816] border border-[#353530] text-[#F5F5F0] hover:bg-[#262624]"
+                : "bg-[#FFFFFF] border border-[#E4E2DE] text-[#171717] hover:bg-[#F7F7F5]"
+            }`}
             disabled={page <= 1}
             onClick={() => {
               setPage((p) => Math.max(1, p - 1));
@@ -51,13 +68,31 @@ export function ProductGrid({ products = [] }) {
             <span>Previous</span>
           </button>
 
-          <div className="px-4 py-1.5 bg-white border border-slate-200/80 rounded-xl text-xs font-heading font-semibold text-slate-700 shadow-2xs">
-            Page <span className="text-cyan-600 font-bold">{page}</span> of {totalPages}
+          <div
+            className={`px-3.5 py-2 border rounded-md text-xs font-mono ${
+              isDark
+                ? "bg-[#181816] border-[#353530] text-[#F5F5F0]"
+                : "bg-[#FFFFFF] border-[#E4E2DE] text-[#171717]"
+            }`}
+          >
+            Page{" "}
+            <span
+              className={`font-bold ${
+                isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+              }`}
+            >
+              {page}
+            </span>{" "}
+            of {totalPages}
           </div>
 
           <button
             type="button"
-            className="btn btn-ghost !py-2 !px-4"
+            className={`px-3.5 py-2 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
+              isDark
+                ? "bg-[#181816] border border-[#353530] text-[#F5F5F0] hover:bg-[#262624]"
+                : "bg-[#FFFFFF] border border-[#E4E2DE] text-[#171717] hover:bg-[#F7F7F5]"
+            }`}
             disabled={page >= totalPages}
             onClick={() => {
               setPage((p) => Math.min(totalPages, p + 1));

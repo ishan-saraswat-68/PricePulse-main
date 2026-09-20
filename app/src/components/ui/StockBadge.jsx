@@ -1,33 +1,60 @@
 import React from "react";
+import { useTheme } from "../../context/ThemeContext";
 
 export function StockBadge({ stock }) {
+  const { isDark } = useTheme();
+
   if (stock === null || stock === undefined) {
     return (
-      <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100/80 text-slate-500 px-2.5 py-0.5 text-[10.5px] font-heading font-medium">
-        Unknown
+      <span
+        className={`inline-flex items-center rounded border px-2 py-0.5 text-[11px] font-mono ${
+          isDark
+            ? "bg-[#181816] border-[#353530] text-[#A1A19A]"
+            : "bg-[#F7F7F5] border-[#E4E2DE] text-[#8A8A84]"
+        }`}
+      >
+        Stock N/A
       </span>
     );
   }
 
   if (stock === 0) {
     return (
-      <span className="inline-flex items-center rounded-full border border-rose-200/80 bg-rose-50 text-rose-700 px-2.5 py-0.5 text-[10.5px] font-heading font-semibold">
-        Out of Stock
+      <span
+        className={`inline-flex items-center rounded border px-2 py-0.5 text-[11px] font-mono font-medium ${
+          isDark
+            ? "bg-[#2D1616] border-[#EF4444]/30 text-[#EF4444]"
+            : "bg-[#FDF2F2] border-[#DC2626]/20 text-[#DC2626]"
+        }`}
+      >
+        Out of stock
       </span>
     );
   }
 
   if (stock <= 5) {
     return (
-      <span className="inline-flex items-center rounded-full border border-amber-200/80 bg-amber-50 text-amber-800 px-2.5 py-0.5 text-[10.5px] font-heading font-semibold">
-        Low Stock ({stock})
+      <span
+        className={`inline-flex items-center rounded border px-2 py-0.5 text-[11px] font-mono font-medium ${
+          isDark
+            ? "bg-[#262014] border-[#EAB308]/30 text-[#EAB308]"
+            : "bg-[#FEFCE8] border-[#CA8A04]/25 text-[#CA8A04]"
+        }`}
+      >
+        Low stock ({stock})
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center rounded-full border border-cyan-200/80 bg-cyan-50 text-cyan-800 px-2.5 py-0.5 text-[10.5px] font-heading font-semibold">
-      In Stock ({stock})
+    <span
+      className={`inline-flex items-center rounded border px-2 py-0.5 text-[11px] font-mono font-medium ${
+        isDark
+          ? "bg-[#16291E] border-[#22C55E]/30 text-[#22C55E]"
+          : "bg-[#F0FDF4] border-[#15803D]/20 text-[#15803D]"
+      }`}
+    >
+      In stock ({stock})
     </span>
   );
 }

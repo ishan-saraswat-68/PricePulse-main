@@ -10,8 +10,10 @@ import {
   Coffee,
   Headphones,
   Package,
-  ArrowRight,
 } from "lucide-react";
+import { formatINR } from "../../services/api";
+import { StockBadge } from "../ui/StockBadge";
+import { useTheme } from "../../context/ThemeContext";
 
 export function getCategoryIcon(category = "") {
   const cat = category.toLowerCase();
@@ -32,72 +34,177 @@ export function getCategoryIcon(category = "") {
   return Package;
 }
 
-export function ProductCard({ product }) {
-  const { id, name, brand, category, sku } = product;
+export function ProductCard({ product, trackedInfo = null }) {
+  const { isDark } = useTheme();
+  const { id, name, brand, category, sku: rawSku } = product;
   const CategoryIcon = getCategoryIcon(category);
+  const sku = rawSku || `SKU-${id.toString().padStart(5, "0")}`;
+
+  const price = trackedInfo?.price ?? product.price;
+  const mrp = trackedInfo?.mrp ?? product.mrp;
+  const stock = trackedInfo?.stock ?? product.stock;
+  const badgePct = trackedInfo?.badge_pct ?? product.badge_pct;
 
   return (
     <Link
       to={`/products/${id}`}
-      className="bg-white/95 backdrop-blur-xs rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-xl hover:border-cyan-400/50 hover:-translate-y-1.5 transition-all duration-300 flex flex-col overflow-hidden group cursor-pointer"
+      className={`rounded-2xl border transition-all duration-200 flex flex-col overflow-hidden group cursor-pointer ${
+        isDark
+          ? "bg-[#181816] border-[#353530] hover:border-[#484842] hover:bg-[#20201D]"
+          : "bg-[#FFFFFF] border-[#E4E2DE] hover:border-[#C8C6C0] hover:bg-[#FAFAF8]"
+      }`}
     >
-      {/* Visual Thumbnail Chamber with Tilted Diagonal Category Ribbon */}
+      {/* Product image/icon area */}
       <div className="p-3 pb-0">
-        <div className="aspect-[4/3] rounded-xl bg-gradient-to-b from-slate-50 via-cyan-50/20 to-slate-100/60 border border-slate-100/90 group-hover:border-cyan-200/50 group-hover:from-cyan-50/40 group-hover:to-cyan-100/20 flex items-center justify-center p-6 select-none relative overflow-hidden transition-all duration-300">
-          
-          {/* Tilted Diagonal Category Corner Ribbon (matches user request & Image 3) */}
-          {category && (
-            <div className="absolute top-0 right-0 w-28 h-28 pointer-events-none overflow-hidden rounded-tr-xl z-10">
-              <div className="absolute top-[18px] -right-[32px] w-[136px] py-[3.5px] bg-white/95 text-slate-900 border-y border-slate-900 text-center text-[8.5px] font-heading font-extrabold uppercase tracking-wider rotate-45 shadow-xs truncate px-1">
-                {category}
-              </div>
-            </div>
-          )}
-
-          {/* Floating SKU / Catalog ID Badge in Top-Left */}
+        <div
+          className={`aspect-[4/3] rounded-xl border flex items-center justify-center p-6 select-none relative overflow-hidden transition-colors duration-200 ${
+            isDark
+              ? "bg-[#11110F] border-[#353530]"
+              : "bg-[#F3F2EE] border-[#E4E2DE]"
+          }`}
+        >
+          {/* Catalog ID indicator */}
           <div className="absolute top-2.5 left-2.5 z-10">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[9.5px] font-mono font-medium text-slate-500 bg-white/85 backdrop-blur-xs border border-slate-200/70 shadow-2xs">
+            <span
+              className={`font-mono text-[10px] px-1.5 py-0.5 rounded-md border ${
+                isDark
+                  ? "bg-[#181816] border-[#353530] text-[#A1A19A]"
+                  : "bg-white border-[#E4E2DE] text-[#8A8A84]"
+              }`}
+            >
               #{id}
             </span>
           </div>
 
-          {/* Icon with Hover Animation */}
-          <div className="relative">
-            <div className="w-16 h-16 rounded-2xl bg-white/80 shadow-xs border border-slate-100 flex items-center justify-center group-hover:shadow-md group-hover:border-cyan-200 group-hover:scale-105 transition-all duration-300">
-              <CategoryIcon
-                className="w-8 h-8 text-slate-500 stroke-[1.5] group-hover:text-cyan-600 transition-colors"
-              />
+          {/* Tilted Category Corner Ribbon */}
+          {category && (
+            <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden pointer-events-none z-10">
+              <div
+                className={`absolute transform rotate-45 text-center font-mono font-bold tracking-wider uppercase text-[8px] py-1 right-[-32px] top-[18px] w-[124px] shadow-xs transition-colors ${
+                  isDark
+                    ? "bg-[#181816] text-[#F59E0B] border-y border-[#F59E0B]/50"
+                    : "bg-[#FFFFFF] text-[#171717] border-y border-[#171717]"
+                }`}
+                title={category}
+              >
+                <span className="block truncate px-1">{category}</span>
+              </div>
             </div>
+          )}
+
+          <div
+            className={`w-14 h-14 rounded-xl border flex items-center justify-center transition-transform duration-200 group-hover:scale-105 ${
+              isDark
+                ? "bg-[#181816] border-[#353530]"
+                : "bg-white border-[#E4E2DE]"
+            }`}
+          >
+            <CategoryIcon
+              className={`w-7 h-7 stroke-[1.5] transition-colors ${
+                isDark
+                  ? "text-[#A1A19A] group-hover:text-[#F59E0B]"
+                  : "text-[#6B6B6B] group-hover:text-[#171717]"
+              }`}
+            />
           </div>
         </div>
       </div>
 
-      {/* Card Details & Action Footer */}
+      {/* Card Content */}
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-        <div>
-          {brand && (
-            <span className="text-[10.5px] font-heading font-bold uppercase tracking-wider text-cyan-600 block mb-1">
-              {brand}
-            </span>
-          )}
-          <h3 className="font-heading font-bold text-[15px] sm:text-[16px] text-slate-900 leading-snug line-clamp-2 group-hover:text-cyan-700 transition-colors">
+        {/* Product Name -> Brand -> SKU */}
+        <div className="space-y-1">
+          <h3
+            className={`font-sans font-semibold text-[18px] sm:text-[19px] leading-snug line-clamp-2 transition-colors ${
+              isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+            }`}
+          >
             {name}
           </h3>
-          {sku && (
-            <p className="text-[11px] text-slate-400 font-mono tracking-normal mt-1">
-              SKU: {sku}
+
+          {brand && (
+            <p
+              className={`font-sans text-[13px] ${
+                isDark ? "text-[#A1A19A]" : "text-[#6B6B6B]"
+              }`}
+            >
+              {brand}
             </p>
           )}
+
+          <p
+            className={`font-mono text-[11px] ${
+              isDark ? "text-[#6B6B68]" : "text-[#8A8A84]"
+            }`}
+          >
+            {sku}
+          </p>
         </div>
 
-        {/* Action Row */}
-        <div className="pt-3.5 mt-3 border-t border-slate-100 flex items-center justify-between">
-          <span className="text-[11.5px] font-heading font-medium text-slate-500">
-            View Live Specs
-          </span>
-          <div className="inline-flex items-center gap-1 text-xs font-heading font-semibold text-cyan-600 group-hover:text-cyan-700 group-hover:translate-x-0.5 transition-all">
-            <span>Details</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+        {/* Price & Stock Status & VIEW DETAILS */}
+        <div
+          className={`pt-4 mt-4 border-t ${
+            isDark ? "border-[#353530]" : "border-[#E4E2DE]"
+          }`}
+        >
+          {price !== undefined && price !== null ? (
+            <div>
+              <div className="flex items-baseline flex-wrap gap-2">
+                <span
+                  className={`font-sans text-[20px] sm:text-[22px] font-bold ${
+                    isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+                  }`}
+                >
+                  {formatINR(price)}
+                </span>
+                {mrp && mrp > price && (
+                  <span
+                    className={`font-mono text-[11px] line-through ${
+                      isDark ? "text-[#6B6B68]" : "text-[#8A8A84]"
+                    }`}
+                  >
+                    MRP {formatINR(mrp)}
+                  </span>
+                )}
+                {badgePct ? (
+                  <span
+                    className={`font-mono text-[11px] font-semibold ${
+                      isDark ? "text-[#22C55E]" : "text-[#15803D]"
+                    }`}
+                  >
+                    -{badgePct}%
+                  </span>
+                ) : null}
+              </div>
+              <div className="mt-2">
+                <StockBadge stock={stock} />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              <span
+                className={`font-mono text-xs block ${
+                  isDark ? "text-[#6B6B68]" : "text-[#8A8A84]"
+                }`}
+              >
+                Catalog Track Available
+              </span>
+              <StockBadge stock={stock} />
+            </div>
+          )}
+
+          {/* VIEW DETAILS → */}
+          <div
+            className={`pt-3.5 mt-3 border-t flex items-center justify-between text-xs font-semibold transition-colors ${
+              isDark
+                ? "border-[#353530] text-[#F5F5F0] group-hover:text-[#F59E0B]"
+                : "border-[#E4E2DE] text-[#171717] group-hover:text-[#D97706]"
+            }`}
+          >
+            <span className="tracking-wide text-[11px] uppercase">VIEW DETAILS</span>
+            <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
+              →
+            </span>
           </div>
         </div>
       </div>

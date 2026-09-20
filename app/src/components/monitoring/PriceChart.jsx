@@ -10,37 +10,74 @@ import {
 } from "recharts";
 import { formatINR, formatDateTime, formatTime } from "../../services/api";
 import { TrendingDown, TrendingUp, RefreshCw, Activity } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
 
-function CustomTooltip({ active, payload }) {
+function CustomTooltip({ active, payload, isDark }) {
   if (!active || !payload || !payload.length) return null;
   const data = payload[0].payload;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-4 text-xs shadow-xl min-w-[200px]">
-      <div className="flex items-center gap-1.5 text-cyan-700 font-heading font-semibold text-[11px] mb-2 pb-1.5 border-b border-slate-100">
+    <div
+      className={`rounded p-3 text-xs shadow-xl min-w-[190px] font-mono border ${
+        isDark
+          ? "bg-[#181816] border-[#353530] text-[#F5F5F0]"
+          : "bg-[#FFFFFF] border-[#E4E2DE] text-[#171717]"
+      }`}
+    >
+      <div
+        className={`flex items-center gap-1.5 font-semibold text-[11px] mb-2 pb-1.5 border-b ${
+          isDark
+            ? "text-[#F59E0B] border-[#353530]"
+            : "text-[#D97706] border-[#E4E2DE]"
+        }`}
+      >
         <Activity className="w-3.5 h-3.5" />
-        <span>Price Telemetry Point</span>
+        <span>Telemetry Point</span>
       </div>
-      <div className="space-y-1 text-slate-500 font-mono text-[11px]">
+      <div
+        className={`space-y-1 text-[11px] ${
+          isDark ? "text-[#A1A19A]" : "text-[#6B6B6B]"
+        }`}
+      >
         <div className="flex items-center justify-between">
           <span>Quoted:</span>
-          <span className="text-slate-800 font-medium">{formatDateTime(data.quoted_at)}</span>
+          <span className={isDark ? "text-[#F5F5F0]" : "text-[#171717]"}>
+            {formatDateTime(data.quoted_at)}
+          </span>
         </div>
         <div className="flex items-center justify-between">
           <span>Scraped:</span>
-          <span className="text-slate-800">{formatTime(data.scraped_at)}</span>
+          <span className={isDark ? "text-[#F5F5F0]" : "text-[#171717]"}>
+            {formatTime(data.scraped_at)}
+          </span>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-4 pt-2 mt-2 border-t border-slate-100">
-        <span className="text-slate-500 font-heading">Price:</span>
-        <span className="font-heading text-slate-900 font-extrabold text-base">
+      <div
+        className={`flex items-center justify-between gap-4 pt-2 mt-2 border-t ${
+          isDark ? "border-[#353530]" : "border-[#E4E2DE]"
+        }`}
+      >
+        <span className={isDark ? "text-[#A1A19A]" : "text-[#6B6B6B]"}>
+          Price:
+        </span>
+        <span
+          className={`font-sans font-bold text-sm ${
+            isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+          }`}
+        >
           {formatINR(data.price)}
         </span>
       </div>
       <div className="flex items-center justify-between gap-4 mt-1">
-        <span className="text-slate-500 font-heading">Stock:</span>
-        <span className="text-cyan-700 font-mono font-semibold">
-          {data.stock !== null && data.stock !== undefined ? `${data.stock} units` : "N/A"}
+        <span className={isDark ? "text-[#A1A19A]" : "text-[#6B6B6B]"}>
+          Stock:
+        </span>
+        <span
+          className={`font-semibold ${
+            isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+          }`}
+        >
+          {data.stock !== null && data.stock !== undefined ? `${data.stock} pcs` : "N/A"}
         </span>
       </div>
     </div>
@@ -48,6 +85,8 @@ function CustomTooltip({ active, payload }) {
 }
 
 export function PriceChart({ history = [], onRefreshPrice = null, refreshingPrice = false }) {
+  const { isDark } = useTheme();
+
   const stats = useMemo(() => {
     if (!history.length) return null;
     const prices = history.map((h) => Number(h.price)).filter((p) => !isNaN(p));
@@ -73,34 +112,72 @@ export function PriceChart({ history = [], onRefreshPrice = null, refreshingPric
   const maxPrice = stats ? Math.ceil(stats.max * 1.05) : 1000;
 
   return (
-    <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs">
+    <div
+      className={`rounded-md border p-5 sm:p-6 font-sans transition-colors duration-150 ${
+        isDark
+          ? "border-[#353530] bg-[#181816]"
+          : "border-[#E4E2DE] bg-[#FFFFFF]"
+      }`}
+    >
       {/* Stat Bar Header */}
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-6 pb-5 border-b border-slate-100">
+      <div
+        className={`flex flex-wrap items-end justify-between gap-4 mb-6 pb-4 border-b ${
+          isDark ? "border-[#353530]" : "border-[#E4E2DE]"
+        }`}
+      >
         <div>
-          <span className="text-[11px] font-heading font-bold uppercase tracking-wider text-slate-400 block mb-1">
-            Latest Quoted Store Price
+          <span
+            className={`text-[10.5px] font-mono uppercase tracking-wider block mb-1 ${
+              isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+            }`}
+          >
+            Latest Quoted Price
           </span>
           <div className="flex items-center gap-3">
-            <span className="font-heading text-3xl sm:text-4xl font-black text-slate-900">
+            <span
+              className={`font-sans text-3xl sm:text-4xl font-bold tracking-tight ${
+                isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+              }`}
+            >
               {stats ? formatINR(stats.latest) : "No Quotes"}
             </span>
+
             {onRefreshPrice && (
               <button
                 type="button"
                 onClick={onRefreshPrice}
                 disabled={refreshingPrice}
-                className="p-2 rounded-xl border border-slate-200 bg-white hover:border-cyan-300 text-slate-500 hover:text-cyan-600 transition-all cursor-pointer shadow-2xs"
+                className={`p-1.5 rounded border transition-colors cursor-pointer ${
+                  isDark
+                    ? "border-[#353530] bg-[#11110F] text-[#A1A19A] hover:text-[#F59E0B] hover:border-[#484842]"
+                    : "border-[#E4E2DE] bg-[#F7F7F5] text-[#6B6B6B] hover:text-[#D97706] hover:border-[#D8D6D0]"
+                }`}
                 title="Refresh Price Quote from Store"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${refreshingPrice ? "animate-spin text-cyan-600" : ""}`} />
+                <RefreshCw
+                  className={`w-3.5 h-3.5 ${
+                    refreshingPrice
+                      ? isDark
+                        ? "animate-spin text-[#F59E0B]"
+                        : "animate-spin text-[#D97706]"
+                      : ""
+                  }`}
+                />
               </button>
             )}
+
             {stats && stats.change !== 0 && (
-              <span className={`inline-flex items-center gap-1 text-xs font-mono font-bold px-2.5 py-0.5 rounded-full ${
-                stats.change < 0
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
-                  : "bg-rose-50 text-rose-700 border border-rose-200/80"
-              }`}>
+              <span
+                className={`inline-flex items-center gap-1 text-xs font-mono font-semibold px-2 py-0.5 rounded border ${
+                  stats.change < 0
+                    ? isDark
+                      ? "bg-[#16291E] text-[#22C55E] border-[#22C55E]/30"
+                      : "bg-[#F0FDF4] text-[#15803D] border-[#15803D]/20"
+                    : isDark
+                    ? "bg-[#2D1616] text-[#EF4444] border-[#EF4444]/30"
+                    : "bg-[#FDF2F2] text-[#DC2626] border-[#DC2626]/20"
+                }`}
+              >
                 {stats.change < 0 ? (
                   <TrendingDown className="w-3.5 h-3.5" />
                 ) : (
@@ -118,8 +195,12 @@ export function PriceChart({ history = [], onRefreshPrice = null, refreshingPric
               type="button"
               onClick={onRefreshPrice}
               disabled={refreshingPrice}
-              className="btn btn-primary !py-2 !px-3.5 !text-xs flex items-center gap-2 cursor-pointer"
-              title="Scrape new live price and plot directly on graph"
+              className={`px-3 py-1.5 rounded border text-xs font-semibold flex items-center gap-2 cursor-pointer disabled:opacity-50 transition-colors ${
+                isDark
+                  ? "border-[#F59E0B] bg-[#F59E0B] text-[#11110F] hover:bg-[#D97706] hover:border-[#D97706] hover:text-white"
+                  : "border-[#D97706] bg-[#D97706] text-white hover:bg-[#B45309] hover:border-[#B45309]"
+              }`}
+              title="Scrape live store price"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${refreshingPrice ? "animate-spin" : ""}`} />
               <span>{refreshingPrice ? "Scraping..." : "Refresh Price Now"}</span>
@@ -128,29 +209,71 @@ export function PriceChart({ history = [], onRefreshPrice = null, refreshingPric
 
           {stats && (
             <div className="flex items-center gap-2">
-              <div className="px-3.5 py-1.5 rounded-xl border border-slate-100 bg-slate-50 text-right">
-                <span className="text-[9.5px] uppercase font-heading font-bold tracking-wider text-slate-400 block">
+              <div
+                className={`px-3 py-1.5 rounded border text-right ${
+                  isDark
+                    ? "border-[#353530] bg-[#11110F]"
+                    : "border-[#E4E2DE] bg-[#F7F7F5]"
+                }`}
+              >
+                <span
+                  className={`text-[9.5px] uppercase font-mono tracking-wider block ${
+                    isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+                  }`}
+                >
                   Lowest
                 </span>
-                <span className="font-heading font-bold text-xs text-slate-800">
+                <span
+                  className={`font-mono font-bold text-xs ${
+                    isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+                  }`}
+                >
                   {formatINR(stats.min)}
                 </span>
               </div>
 
-              <div className="px-3.5 py-1.5 rounded-xl border border-slate-100 bg-slate-50 text-right">
-                <span className="text-[9.5px] uppercase font-heading font-bold tracking-wider text-slate-400 block">
+              <div
+                className={`px-3 py-1.5 rounded border text-right ${
+                  isDark
+                    ? "border-[#353530] bg-[#11110F]"
+                    : "border-[#E4E2DE] bg-[#F7F7F5]"
+                }`}
+              >
+                <span
+                  className={`text-[9.5px] uppercase font-mono tracking-wider block ${
+                    isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+                  }`}
+                >
                   Highest
                 </span>
-                <span className="font-heading font-bold text-xs text-slate-800">
+                <span
+                  className={`font-mono font-bold text-xs ${
+                    isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+                  }`}
+                >
                   {formatINR(stats.max)}
                 </span>
               </div>
 
-              <div className="px-3.5 py-1.5 rounded-xl border border-slate-100 bg-slate-50 text-right">
-                <span className="text-[9.5px] uppercase font-heading font-bold tracking-wider text-slate-400 block">
+              <div
+                className={`px-3 py-1.5 rounded border text-right ${
+                  isDark
+                    ? "border-[#353530] bg-[#11110F]"
+                    : "border-[#E4E2DE] bg-[#F7F7F5]"
+                }`}
+              >
+                <span
+                  className={`text-[9.5px] uppercase font-mono tracking-wider block ${
+                    isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+                  }`}
+                >
                   Quotes
                 </span>
-                <span className="font-mono text-xs font-bold text-cyan-700">
+                <span
+                  className={`font-mono text-xs font-bold ${
+                    isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+                  }`}
+                >
                   {history.length}
                 </span>
               </div>
@@ -161,9 +284,25 @@ export function PriceChart({ history = [], onRefreshPrice = null, refreshingPric
 
       {/* Recharts LineChart */}
       {history.length === 0 ? (
-        <div className="h-64 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 text-slate-500 p-6 text-center">
-          <p className="font-heading text-sm text-slate-800 font-bold">No price history points recorded yet.</p>
-          <p className="text-xs text-slate-400 mt-1 max-w-sm">
+        <div
+          className={`h-64 flex flex-col items-center justify-center rounded border border-dashed p-6 text-center ${
+            isDark
+              ? "border-[#353530] bg-[#11110F] text-[#A1A19A]"
+              : "border-[#E4E2DE] bg-[#F7F7F5] text-[#6B6B6B]"
+          }`}
+        >
+          <p
+            className={`font-sans text-sm font-semibold ${
+              isDark ? "text-[#F5F5F0]" : "text-[#171717]"
+            }`}
+          >
+            No price history points recorded yet.
+          </p>
+          <p
+            className={`text-xs mt-1 max-w-sm ${
+              isDark ? "text-[#A1A19A]" : "text-[#6B6B6B]"
+            }`}
+          >
             Scrape the live store quote to begin plotting telemetry on this product's price history chart.
           </p>
           {onRefreshPrice && (
@@ -171,7 +310,11 @@ export function PriceChart({ history = [], onRefreshPrice = null, refreshingPric
               type="button"
               onClick={onRefreshPrice}
               disabled={refreshingPrice}
-              className="btn btn-primary mt-4 !py-2 !px-4 !text-xs flex items-center gap-2 cursor-pointer"
+              className={`mt-4 px-3 py-1.5 rounded border text-xs font-semibold flex items-center gap-2 cursor-pointer ${
+                isDark
+                  ? "border-[#F59E0B] bg-[#F59E0B] text-[#11110F] hover:bg-[#D97706]"
+                  : "border-[#D97706] bg-[#D97706] text-white hover:bg-[#B45309]"
+              }`}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${refreshingPrice ? "animate-spin" : ""}`} />
               <span>{refreshingPrice ? "Scraping Store..." : "Fetch First Price Quote"}</span>
@@ -185,41 +328,63 @@ export function PriceChart({ history = [], onRefreshPrice = null, refreshingPric
               data={chartData}
               margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={isDark ? "#262624" : "#E4E2DE"}
+                vertical={false}
+              />
               <XAxis
                 dataKey="timeLabel"
-                stroke="#94a3b8"
+                stroke={isDark ? "#6B6B68" : "#8A8A84"}
                 fontSize={10}
-                fontFamily="monospace"
+                fontFamily="JetBrains Mono, monospace"
                 tickLine={false}
-                axisLine={{ stroke: "#e2e8f0" }}
+                axisLine={{ stroke: isDark ? "#353530" : "#E4E2DE" }}
               />
               <YAxis
                 domain={[minPrice, maxPrice]}
-                stroke="#94a3b8"
+                stroke={isDark ? "#6B6B68" : "#8A8A84"}
                 fontSize={10}
-                fontFamily="Inter, sans-serif"
+                fontFamily="JetBrains Mono, monospace"
                 tickLine={false}
-                axisLine={{ stroke: "#e2e8f0" }}
+                axisLine={{ stroke: isDark ? "#353530" : "#E4E2DE" }}
                 tickFormatter={(v) => `₹${v.toLocaleString("en-IN")}`}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip isDark={isDark} />} />
               <Line
                 type="monotone"
                 dataKey="price"
-                stroke="#0891b2"
-                strokeWidth={2.5}
-                dot={{ r: 4, fill: "#0891b2", stroke: "#ffffff", strokeWidth: 2 }}
-                activeDot={{ r: 6.5, fill: "#06b6d4", stroke: "#0891b2", strokeWidth: 2 }}
+                stroke={isDark ? "#F59E0B" : "#D97706"}
+                strokeWidth={2}
+                dot={{
+                  r: 3.5,
+                  fill: isDark ? "#F59E0B" : "#D97706",
+                  stroke: isDark ? "#181816" : "#FFFFFF",
+                  strokeWidth: 1.5,
+                }}
+                activeDot={{
+                  r: 5.5,
+                  fill: isDark ? "#F59E0B" : "#D97706",
+                  stroke: "#FFFFFF",
+                  strokeWidth: 2,
+                }}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
       )}
 
-      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
-        <span>X-Axis: Store Quoted Timestamp (quoted_at)</span>
-        <span className="text-cyan-700">● Live surveillance points</span>
+      <div
+        className={`mt-4 pt-3 border-t flex items-center justify-between text-[11px] font-mono ${
+          isDark
+            ? "border-[#353530] text-[#A1A19A]"
+            : "border-[#E4E2DE] text-[#8A8A84]"
+        }`}
+      >
+        <span>X-Axis: Store Quoted Timestamp</span>
+        <span className={isDark ? "text-[#F59E0B]" : "text-[#D97706]"}>
+          ● Live surveillance points
+        </span>
       </div>
     </div>
   );

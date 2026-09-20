@@ -16,15 +16,7 @@ export function useProducts(query, debounceMs = 300) {
       .then((data) => {
         if (!cancelled) {
           setAllProducts(data);
-          setResults(
-            data.map(({ id, slug, name, brand, category }) => ({
-              id,
-              slug,
-              name,
-              brand,
-              category,
-            }))
-          );
+          setResults(data);
           setLoading(false);
         }
       })
@@ -42,15 +34,7 @@ export function useProducts(query, debounceMs = 300) {
   // Debounced search
   useEffect(() => {
     if (!query || !query.trim()) {
-      setResults(
-        allProducts.map(({ id, slug, name, brand, category }) => ({
-          id,
-          slug,
-          name,
-          brand,
-          category,
-        }))
-      );
+      setResults(allProducts);
       setError(null);
       return;
     }

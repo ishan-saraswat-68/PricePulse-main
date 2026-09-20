@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Search, X, SlidersHorizontal, Check } from "lucide-react";
+import { useTheme } from "../../context/ThemeContext";
 
 export function ProductSearch({
   query,
@@ -9,6 +10,7 @@ export function ProductSearch({
   categories = [],
   totalCount = 0,
 }) {
+  const { isDark } = useTheme();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
 
@@ -28,23 +30,35 @@ export function ProductSearch({
   }, [isFilterOpen]);
 
   return (
-    <div className="flex flex-col gap-3 w-full lg:w-auto">
+    <div className="flex flex-col gap-3 w-full lg:w-auto font-sans">
       <div className="flex flex-wrap items-center gap-3">
-        {/* Search Input: rounded pill with cyan focus ring */}
+        {/* Search Input */}
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search
+            className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none ${
+              isDark ? "text-[#6B6B68]" : "text-[#8A8A84]"
+            }`}
+          />
           <input
             type="text"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Search catalog by name, brand, SKU..."
-            className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-200/90 rounded-xl text-xs font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500 transition-all shadow-2xs"
+            className={`w-full pl-9 pr-8 py-2 rounded-md text-xs transition-colors focus:outline-none focus:ring-1 ${
+              isDark
+                ? "bg-[#181816] border border-[#353530] text-[#F5F5F0] placeholder-[#6B6B68] focus:border-[#F59E0B] focus:ring-[#F59E0B]"
+                : "bg-[#FFFFFF] border border-[#E4E2DE] text-[#171717] placeholder-[#8A8A84] focus:border-[#D97706] focus:ring-[#D97706]"
+            }`}
           />
           {query && (
             <button
               type="button"
               onClick={() => onQueryChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer p-0.5 rounded-full hover:bg-slate-100"
+              className={`absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer p-0.5 rounded ${
+                isDark
+                  ? "text-[#A1A19A] hover:text-[#F5F5F0] hover:bg-[#262624]"
+                  : "text-[#8A8A84] hover:text-[#171717] hover:bg-[#F7F7F5]"
+              }`}
               title="Clear Search"
             >
               <X className="w-3.5 h-3.5" />
@@ -57,25 +71,49 @@ export function ProductSearch({
           <button
             type="button"
             onClick={() => setIsFilterOpen((prev) => !prev)}
-            className={`px-4 py-2.5 border rounded-xl text-xs font-heading font-semibold transition-all flex items-center gap-2 cursor-pointer shadow-2xs ${
+            className={`px-3 py-2 border rounded-md text-xs font-medium transition-colors flex items-center gap-2 cursor-pointer ${
               selectedCategory
-                ? "bg-cyan-50 border-cyan-300 text-cyan-800 ring-2 ring-cyan-500/20"
-                : "bg-white border-slate-200/90 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                ? isDark
+                  ? "bg-[#262014] border-[#F59E0B] text-[#F59E0B]"
+                  : "bg-[#F3F2EE] border-[#D97706] text-[#D97706]"
+                : isDark
+                ? "bg-[#181816] border-[#353530] text-[#F5F5F0] hover:bg-[#262624]"
+                : "bg-[#FFFFFF] border-[#E4E2DE] text-[#171717] hover:bg-[#F7F7F5]"
             }`}
             title="Filter by category"
           >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-600" />
-            <span>{selectedCategory ? `Category: ${selectedCategory}` : "Categories"}</span>
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span>{selectedCategory ? selectedCategory : "Categories"}</span>
             {selectedCategory && (
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isDark ? "bg-[#F59E0B]" : "bg-[#D97706]"
+                }`}
+              />
             )}
           </button>
 
           {/* Category Filter Dropdown */}
           {isFilterOpen && (
-            <div className="absolute right-0 mt-2 w-60 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
-              <div className="p-3 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
-                <span className="text-[11px] font-heading font-bold uppercase tracking-wider text-slate-500">
+            <div
+              className={`absolute right-0 mt-1.5 w-60 border rounded-md shadow-lg z-50 overflow-hidden font-sans text-xs ${
+                isDark
+                  ? "bg-[#181816] border-[#353530] text-[#F5F5F0]"
+                  : "bg-[#FFFFFF] border-[#E4E2DE] text-[#171717]"
+              }`}
+            >
+              <div
+                className={`p-3 border-b flex items-center justify-between ${
+                  isDark
+                    ? "bg-[#11110F] border-[#353530]"
+                    : "bg-[#F7F7F5] border-[#E4E2DE]"
+                }`}
+              >
+                <span
+                  className={`text-[10px] uppercase tracking-[0.15em] font-medium ${
+                    isDark ? "text-[#A1A19A]" : "text-[#8A8A84]"
+                  }`}
+                >
                   Filter by Category
                 </span>
                 {selectedCategory && (
@@ -85,28 +123,44 @@ export function ProductSearch({
                       onCategoryChange("");
                       setIsFilterOpen(false);
                     }}
-                    className="text-[11px] font-heading font-semibold text-cyan-600 hover:text-cyan-800 cursor-pointer"
+                    className={`text-[11px] font-medium hover:underline cursor-pointer ${
+                      isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+                    }`}
                   >
                     Reset
                   </button>
                 )}
               </div>
 
-              <div className="py-1 max-h-64 overflow-y-auto">
+              <div
+                className={`py-1 max-h-64 overflow-y-auto divide-y ${
+                  isDark ? "divide-[#262624]" : "divide-[#F3F2EE]"
+                }`}
+              >
                 <button
                   type="button"
                   onClick={() => {
                     onCategoryChange("");
                     setIsFilterOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-left text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                  className={`w-full px-3.5 py-2 text-left text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
                     !selectedCategory
-                      ? "bg-cyan-50 text-cyan-800 font-semibold"
-                      : "text-slate-700 hover:bg-slate-50"
+                      ? isDark
+                        ? "bg-[#262014] text-[#F59E0B] font-semibold"
+                        : "bg-[#F3F2EE] text-[#D97706] font-semibold"
+                      : isDark
+                      ? "text-[#F5F5F0] hover:bg-[#20201D]"
+                      : "text-[#171717] hover:bg-[#F7F7F5]"
                   }`}
                 >
                   <span>All Categories</span>
-                  {!selectedCategory && <Check className="w-4 h-4 text-cyan-600" />}
+                  {!selectedCategory && (
+                    <Check
+                      className={`w-3.5 h-3.5 ${
+                        isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+                      }`}
+                    />
+                  )}
                 </button>
 
                 {categories.map((cat) => {
@@ -119,14 +173,24 @@ export function ProductSearch({
                         onCategoryChange(cat);
                         setIsFilterOpen(false);
                       }}
-                      className={`w-full px-4 py-2 text-left text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                      className={`w-full px-3.5 py-2 text-left text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
                         isSelected
-                          ? "bg-cyan-50 text-cyan-800 font-semibold"
-                          : "text-slate-700 hover:bg-slate-50"
+                          ? isDark
+                            ? "bg-[#262014] text-[#F59E0B] font-semibold"
+                            : "bg-[#F3F2EE] text-[#D97706] font-semibold"
+                          : isDark
+                          ? "text-[#F5F5F0] hover:bg-[#20201D]"
+                          : "text-[#171717] hover:bg-[#F7F7F5]"
                       }`}
                     >
                       <span>{cat}</span>
-                      {isSelected && <Check className="w-4 h-4 text-cyan-600" />}
+                      {isSelected && (
+                        <Check
+                          className={`w-3.5 h-3.5 ${
+                            isDark ? "text-[#F59E0B]" : "text-[#D97706]"
+                          }`}
+                        />
+                      )}
                     </button>
                   );
                 })}
@@ -138,29 +202,37 @@ export function ProductSearch({
 
       {/* Quick Category Filter Chips */}
       {categories.length > 0 && (
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 max-w-full">
           <button
             type="button"
             onClick={() => onCategoryChange("")}
-            className={`px-3 py-1 rounded-full text-[11px] font-heading font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`px-2.5 py-1 rounded text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
               !selectedCategory
-                ? "bg-slate-900 text-white shadow-2xs"
-                : "bg-white text-slate-600 border border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
+                ? isDark
+                  ? "bg-[#F5F5F0] text-[#11110F]"
+                  : "bg-[#171717] text-white"
+                : isDark
+                ? "bg-[#181816] text-[#A1A19A] border border-[#353530] hover:text-[#F5F5F0] hover:bg-[#20201D]"
+                : "bg-[#FFFFFF] text-[#6B6B6B] border border-[#E4E2DE] hover:text-[#171717] hover:bg-[#F7F7F5]"
             }`}
           >
             All Products
           </button>
-          {categories.slice(0, 5).map((cat) => {
+          {categories.slice(0, 6).map((cat) => {
             const isSelected = selectedCategory.toLowerCase() === cat.toLowerCase();
             return (
               <button
                 key={cat}
                 type="button"
                 onClick={() => onCategoryChange(isSelected ? "" : cat)}
-                className={`px-3 py-1 rounded-full text-[11px] font-heading font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
                   isSelected
-                    ? "bg-cyan-600 text-white shadow-2xs shadow-cyan-500/20"
-                    : "bg-white text-slate-600 border border-slate-200/80 hover:border-cyan-200 hover:text-cyan-700 hover:bg-cyan-50/50"
+                    ? isDark
+                      ? "bg-[#F59E0B] text-[#11110F]"
+                      : "bg-[#D97706] text-white"
+                    : isDark
+                    ? "bg-[#181816] text-[#A1A19A] border border-[#353530] hover:text-[#F5F5F0] hover:bg-[#20201D]"
+                    : "bg-[#FFFFFF] text-[#6B6B6B] border border-[#E4E2DE] hover:text-[#171717] hover:bg-[#F7F7F5]"
                 }`}
               >
                 {cat}

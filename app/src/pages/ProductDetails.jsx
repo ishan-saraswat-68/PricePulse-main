@@ -7,9 +7,11 @@ import { ProductSummary } from "../components/products/ProductSummary";
 import { ProductSpecs } from "../components/products/ProductSpecs";
 import { LoadingSkeleton } from "../components/ui/LoadingSkeleton";
 import { ErrorState } from "../components/ui/ErrorState";
+import { useTheme } from "../context/ThemeContext";
 import { ArrowLeft } from "lucide-react";
 
 export function ProductDetails() {
+  const { isDark } = useTheme();
   const { id } = useParams();
   const productId = Number(id);
 
@@ -43,10 +45,14 @@ export function ProductDetails() {
       <div>
         <Link
           to="/products"
-          className="inline-flex items-center gap-1.5 text-xs font-heading font-semibold text-slate-500 hover:text-cyan-600 transition-colors"
+          className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors ${
+            isDark
+              ? "text-[#A1A19A] hover:text-[#F59E0B]"
+              : "text-[#6B6B6B] hover:text-[#D97706]"
+          }`}
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Catalog Shelves</span>
+          <span>← Back to Catalog Shelves</span>
         </Link>
       </div>
 

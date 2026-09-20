@@ -14,7 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-export function AlertsPopover() {
+export function AlertsPopover({ isMonitoring = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const [filterType, setFilterType] = useState("all");
   const popoverRef = useRef(null);
@@ -65,16 +65,26 @@ export function AlertsPopover() {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-label="View Alerts"
-        className={`relative p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-center ${
-          isOpen
-            ? "bg-cyan-50 border-cyan-300 text-cyan-700 shadow-xs"
-            : "bg-white border-slate-200/90 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-2xs"
+        className={`relative p-2 rounded border transition-colors cursor-pointer flex items-center justify-center ${
+          isMonitoring
+            ? isOpen
+              ? "bg-[#262624] border-[#F59E0B] text-[#F59E0B]"
+              : "bg-[#181816] border-[#353530] text-[#A1A19A] hover:text-[#F5F5F0] hover:border-[#484842]"
+            : isOpen
+            ? "bg-[#F3F2EE] border-[#D97706] text-[#D97706]"
+            : "bg-[#FFFFFF] border-[#E4E2DE] text-[#6B6B6B] hover:text-[#171717] hover:border-[#D8D6D0]"
         }`}
         title="Price Drop & Stock Alerts"
       >
         <Bell className="w-4 h-4" />
         {totalNotificationCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-cyan-600 text-white text-[10px] font-mono font-bold rounded-full flex items-center justify-center ring-2 ring-white shadow-xs">
+          <span
+            className={`absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 text-white text-[10px] font-mono font-bold rounded flex items-center justify-center ring-2 ${
+              isMonitoring
+                ? "bg-[#F59E0B] text-[#11110F] ring-[#181816]"
+                : "bg-[#D97706] ring-[#FFFFFF]"
+            }`}
+          >
             {totalNotificationCount}
           </span>
         )}
@@ -82,18 +92,38 @@ export function AlertsPopover() {
 
       {/* Popover Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2.5 w-[340px] sm:w-[420px] bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div
+          className={`absolute right-0 mt-2 w-[340px] sm:w-[400px] border rounded-md shadow-lg z-50 overflow-hidden font-sans text-xs ${
+            isMonitoring
+              ? "bg-[#181816] border-[#353530] text-[#F5F5F0]"
+              : "bg-[#FFFFFF] border-[#E4E2DE] text-[#171717]"
+          }`}
+        >
           {/* Header */}
-          <div className="p-4 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
+          <div
+            className={`p-3.5 border-b flex items-center justify-between ${
+              isMonitoring
+                ? "bg-[#11110F] border-[#353530]"
+                : "bg-[#F7F7F5] border-[#E4E2DE]"
+            }`}
+          >
             <div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-cyan-500"></span>
-                <h3 className="font-heading font-bold text-sm tracking-tight text-slate-900">
-                  Surveillance Alerts
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    isMonitoring ? "bg-[#F59E0B]" : "bg-[#D97706]"
+                  }`}
+                />
+                <h3
+                  className={`font-semibold text-sm ${
+                    isMonitoring ? "text-[#F5F5F0]" : "text-[#171717]"
+                  }`}
+                >
+                  Alerts & Notifications
                 </h3>
               </div>
-              <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                {triggeredAlerts.length} triggered price drop or stock events
+              <p className="text-[11px] text-[#8A8A84] mt-0.5 font-mono">
+                {triggeredAlerts.length} triggered events
               </p>
             </div>
 
@@ -101,7 +131,11 @@ export function AlertsPopover() {
               <button
                 type="button"
                 onClick={() => refresh()}
-                className="p-1.5 rounded-lg hover:bg-slate-200/60 text-slate-500 hover:text-slate-900 transition-colors"
+                className={`p-1.5 rounded transition-colors ${
+                  isMonitoring
+                    ? "hover:bg-[#262624] text-[#A1A19A] hover:text-[#F5F5F0]"
+                    : "hover:bg-[#E4E2DE] text-[#6B6B6B] hover:text-[#171717]"
+                }`}
                 title="Refresh alerts"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
@@ -109,7 +143,11 @@ export function AlertsPopover() {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-200/60 text-slate-500 hover:text-slate-900 transition-colors"
+                className={`p-1.5 rounded transition-colors ${
+                  isMonitoring
+                    ? "hover:bg-[#262624] text-[#A1A19A] hover:text-[#F5F5F0]"
+                    : "hover:bg-[#E4E2DE] text-[#6B6B6B] hover:text-[#171717]"
+                }`}
                 title="Close"
               >
                 <X className="w-4 h-4" />
@@ -118,14 +156,24 @@ export function AlertsPopover() {
           </div>
 
           {/* Filter Tabs */}
-          <div className="flex border-b border-slate-100 text-xs font-heading bg-white p-1 gap-1">
+          <div
+            className={`flex border-b p-1 gap-1 text-xs ${
+              isMonitoring
+                ? "bg-[#181816] border-[#353530]"
+                : "bg-[#FFFFFF] border-[#E4E2DE]"
+            }`}
+          >
             <button
               type="button"
               onClick={() => setFilterType("all")}
-              className={`flex-1 py-1.5 text-center rounded-lg transition-all font-semibold ${
+              className={`flex-1 py-1 text-center rounded text-xs font-medium transition-colors ${
                 filterType === "all"
-                  ? "bg-slate-100 text-slate-900"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                  ? isMonitoring
+                    ? "bg-[#262624] text-[#F5F5F0]"
+                    : "bg-[#F7F7F5] text-[#171717] font-semibold"
+                  : isMonitoring
+                  ? "text-[#A1A19A] hover:text-[#F5F5F0]"
+                  : "text-[#6B6B6B] hover:text-[#171717]"
               }`}
             >
               All ({alerts.length})
@@ -133,10 +181,14 @@ export function AlertsPopover() {
             <button
               type="button"
               onClick={() => setFilterType("price_drop")}
-              className={`flex-1 py-1.5 text-center rounded-lg transition-all font-semibold ${
+              className={`flex-1 py-1 text-center rounded text-xs font-medium transition-colors ${
                 filterType === "price_drop"
-                  ? "bg-cyan-50 text-cyan-800"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                  ? isMonitoring
+                    ? "bg-[#262624] text-[#F59E0B]"
+                    : "bg-[#F3F2EE] text-[#D97706] font-semibold"
+                  : isMonitoring
+                  ? "text-[#A1A19A] hover:text-[#F5F5F0]"
+                  : "text-[#6B6B6B] hover:text-[#171717]"
               }`}
             >
               Price Drops ({alerts.filter((a) => a.type === "price_drop").length})
@@ -144,10 +196,14 @@ export function AlertsPopover() {
             <button
               type="button"
               onClick={() => setFilterType("back_in_stock")}
-              className={`flex-1 py-1.5 text-center rounded-lg transition-all font-semibold ${
+              className={`flex-1 py-1 text-center rounded text-xs font-medium transition-colors ${
                 filterType === "back_in_stock"
-                  ? "bg-cyan-50 text-cyan-800"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                  ? isMonitoring
+                    ? "bg-[#262624] text-[#22C55E]"
+                    : "bg-[#F3F2EE] text-[#15803D] font-semibold"
+                  : isMonitoring
+                  ? "text-[#A1A19A] hover:text-[#F5F5F0]"
+                  : "text-[#6B6B6B] hover:text-[#171717]"
               }`}
             >
               Stock ({alerts.filter((a) => a.type === "back_in_stock").length})
@@ -155,15 +211,31 @@ export function AlertsPopover() {
           </div>
 
           {/* Alerts List */}
-          <div className="max-h-[380px] overflow-y-auto divide-y divide-slate-100">
+          <div
+            className={`max-h-[340px] overflow-y-auto divide-y ${
+              isMonitoring ? "divide-[#262624]" : "divide-[#E4E2DE]"
+            }`}
+          >
             {filteredAlerts.length === 0 ? (
-              <div className="p-8 text-center bg-white">
-                <CheckCircle2 className="w-8 h-8 text-slate-300 mx-auto mb-2 stroke-[1.5]" />
-                <p className="font-heading font-semibold text-sm text-slate-800">
+              <div
+                className={`p-6 text-center ${
+                  isMonitoring ? "bg-[#181816]" : "bg-[#FFFFFF]"
+                }`}
+              >
+                <CheckCircle2
+                  className={`w-6 h-6 mx-auto mb-2 stroke-[1.5] ${
+                    isMonitoring ? "text-[#353530]" : "text-[#D8D6D0]"
+                  }`}
+                />
+                <p
+                  className={`font-medium text-xs ${
+                    isMonitoring ? "text-[#F5F5F0]" : "text-[#171717]"
+                  }`}
+                >
                   No alerts in this category
                 </p>
-                <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
-                  PricePulse continuously monitors your tracked catalog for price reductions and restocks.
+                <p className="text-[11px] text-[#8A8A84] mt-1">
+                  Surveillance continues running in background.
                 </p>
               </div>
             ) : (
@@ -175,77 +247,107 @@ export function AlertsPopover() {
                 return (
                   <div
                     key={alert.id}
-                    className={`p-4 transition-colors ${
-                      isTriggered ? "bg-amber-50/40 hover:bg-amber-50/70" : "bg-white hover:bg-slate-50/80"
+                    className={`p-3.5 transition-colors ${
+                      isTriggered
+                        ? isMonitoring
+                          ? "bg-[#221C11] hover:bg-[#2A2315]"
+                          : "bg-[#FEF9EE] hover:bg-[#FDF4DC]"
+                        : isMonitoring
+                        ? "bg-[#181816] hover:bg-[#20201D]"
+                        : "bg-[#FFFFFF] hover:bg-[#FAF9F6]"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-1 flex-1">
                         <div className="flex items-center gap-2">
                           {isTriggered ? (
-                            <span className="inline-flex items-center gap-1 text-[9.5px] font-heading font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-600 text-white shadow-2xs">
+                            <span
+                              className={`inline-flex items-center gap-1 text-[10px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded ${
+                                isMonitoring
+                                  ? "bg-[#F59E0B] text-[#11110F]"
+                                  : "bg-[#D97706] text-white"
+                              }`}
+                            >
                               {isPriceDrop ? (
                                 <>
-                                  <TrendingDown className="w-3 h-3 text-white" />
-                                  Price Drop Triggered
+                                  <TrendingDown className="w-3 h-3" />
+                                  Price Drop
                                 </>
                               ) : (
                                 <>
-                                  <PackageCheck className="w-3 h-3 text-white" />
-                                  Back In Stock
+                                  <PackageCheck className="w-3 h-3" />
+                                  In Stock
                                 </>
                               )}
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[9.5px] font-heading font-semibold tracking-wide px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200">
-                              <Activity className="w-3 h-3 text-cyan-600" />
+                            <span
+                              className={`inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                                isMonitoring
+                                  ? "bg-[#11110F] border-[#353530] text-[#A1A19A]"
+                                  : "bg-[#F7F7F5] border-[#E4E2DE] text-[#6B6B6B]"
+                              }`}
+                            >
+                              <Activity className="w-3 h-3 text-[#8A8A84]" />
                               Armed
                             </span>
                           )}
 
-                          <span className="text-[10px] font-mono text-slate-400">
+                          <span className="text-[10px] font-mono text-[#8A8A84]">
                             {product.sku || `ID #${alert.product_id}`}
                           </span>
                         </div>
 
-                        <h4 className="font-heading font-bold text-sm text-slate-900 leading-snug pt-0.5">
+                        <h4
+                          className={`font-semibold text-xs leading-snug pt-0.5 ${
+                            isMonitoring ? "text-[#F5F5F0]" : "text-[#171717]"
+                          }`}
+                        >
                           {product.name || `Catalog Item #${alert.product_id}`}
                         </h4>
 
-                        <p className="text-xs text-slate-600 font-normal leading-relaxed">
+                        <p className="text-[11px] text-[#8A8A84] leading-relaxed">
                           {isTriggered
                             ? isPriceDrop
                               ? "A price drop was captured by PricePulse surveillance."
                               : "Inventory was replenished on the store."
                             : isPriceDrop
-                            ? "Active rule: Alerts when price reduction is captured."
-                            : "Active rule: Alerts when units return to stock."}
+                            ? "Alerts when price drop is detected."
+                            : "Alerts when item returns to stock."}
                         </p>
 
-                        <div className="text-[10px] font-mono text-slate-400 pt-0.5">
+                        <div className="text-[10px] font-mono text-[#8A8A84]">
                           {isTriggered ? (
                             <span>Triggered: {formatDateTime(alert.triggered_at)}</span>
                           ) : (
-                            <span>Surveillance armed · 15m polling</span>
+                            <span>Polling scheduled</span>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-1.5 shrink-0 pt-1">
+                      <div className="flex flex-col gap-1 shrink-0 pt-1">
                         <Link
                           to={`/products/${alert.product_id}/monitor`}
                           onClick={() => setIsOpen(false)}
-                          className="btn btn-primary !py-1 !px-2.5 !text-[11px] flex items-center gap-1"
-                          title="Open telemetry chart"
+                          className={`px-2 py-1 rounded text-[11px] font-medium flex items-center gap-1 transition-colors ${
+                            isMonitoring
+                              ? "bg-[#F59E0B] text-[#11110F] hover:bg-[#D97706]"
+                              : "bg-[#D97706] text-white hover:bg-[#B45309]"
+                          }`}
+                          title="Open monitoring console"
                         >
-                          <span>Graph</span>
+                          <span>Monitor</span>
                           <ArrowRight className="w-3 h-3" />
                         </Link>
                         <Link
                           to={`/products/${alert.product_id}`}
                           onClick={() => setIsOpen(false)}
-                          className="btn btn-ghost !py-1 !px-2.5 !text-[11px] flex items-center gap-1"
-                          title="View catalog details"
+                          className={`px-2 py-1 rounded border text-[11px] font-medium flex items-center gap-1 transition-colors ${
+                            isMonitoring
+                              ? "bg-[#181816] border-[#353530] text-[#A1A19A] hover:text-[#F5F5F0]"
+                              : "bg-[#FFFFFF] border-[#E4E2DE] text-[#6B6B6B] hover:text-[#171717]"
+                          }`}
+                          title="View product details"
                         >
                           <span>Item</span>
                           <ExternalLink className="w-3 h-3" />
@@ -259,16 +361,26 @@ export function AlertsPopover() {
           </div>
 
           {/* Footer Bar */}
-          <div className="p-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span className="font-mono text-[10px] text-slate-500">
-              {alerts.length} monitored rules
+          <div
+            className={`p-3 border-t flex items-center justify-between text-xs ${
+              isMonitoring
+                ? "bg-[#11110F] border-[#353530]"
+                : "bg-[#F7F7F5] border-[#E4E2DE]"
+            }`}
+          >
+            <span className="font-mono text-[10px] text-[#8A8A84]">
+              {alerts.length} active rules
             </span>
             <Link
               to="/dashboard"
               onClick={() => setIsOpen(false)}
-              className="font-heading font-semibold text-cyan-700 hover:text-cyan-800 flex items-center gap-1 text-xs"
+              className={`font-medium flex items-center gap-1 text-xs transition-colors ${
+                isMonitoring
+                  ? "text-[#F59E0B] hover:underline"
+                  : "text-[#D97706] hover:text-[#B45309]"
+              }`}
             >
-              <span>View Tracking Dashboard</span>
+              <span>View Dashboard</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
