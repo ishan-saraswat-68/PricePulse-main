@@ -10,11 +10,12 @@ export function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Navigate to="/products" replace />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/products/:id/monitor" element={<ProductMonitor />} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+       
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>
